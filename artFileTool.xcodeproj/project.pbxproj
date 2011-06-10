@@ -1,0 +1,236 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE482F413A2884800F0F1A8 /* Foundation.framework */; };
+		FAE482F813A2884800F0F1A8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE482F713A2884800F0F1A8 /* main.m */; };
+		FAE482FC13A2884800F0F1A8 /* artFileTool.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FAE482FB13A2884800F0F1A8 /* artFileTool.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FAE482EE13A2884800F0F1A8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				FAE482FC13A2884800F0F1A8 /* artFileTool.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FAE482F013A2884800F0F1A8 /* artFileTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = artFileTool; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAE482F413A2884800F0F1A8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FAE482F713A2884800F0F1A8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */ = {isa = PBXFileReference; path = "artFileTool-Prefix.pch"; sourceTree = "<group>"; };
+		FAE482FB13A2884800F0F1A8 /* artFileTool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = artFileTool.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAE482ED13A2884800F0F1A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FAE482E513A2884700F0F1A8 = {
+			isa = PBXGroup;
+			children = (
+				FAE482F613A2884800F0F1A8 /* artFileTool */,
+				FAE482F313A2884800F0F1A8 /* Frameworks */,
+				FAE482F113A2884800F0F1A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FAE482F113A2884800F0F1A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAE482F013A2884800F0F1A8 /* artFileTool */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAE482F313A2884800F0F1A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAE482F413A2884800F0F1A8 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FAE482F613A2884800F0F1A8 /* artFileTool */ = {
+			isa = PBXGroup;
+			children = (
+				FAE482F713A2884800F0F1A8 /* main.m */,
+				FAE482FB13A2884800F0F1A8 /* artFileTool.1 */,
+				FAE482F913A2884800F0F1A8 /* Supporting Files */,
+			);
+			path = artFileTool;
+			sourceTree = "<group>";
+		};
+		FAE482F913A2884800F0F1A8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FAE482EF13A2884800F0F1A8 /* artFileTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAE482FF13A2884800F0F1A8 /* Build configuration list for PBXNativeTarget "artFileTool" */;
+			buildPhases = (
+				FAE482EC13A2884800F0F1A8 /* Sources */,
+				FAE482ED13A2884800F0F1A8 /* Frameworks */,
+				FAE482EE13A2884800F0F1A8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = artFileTool;
+			productName = artFileTool;
+			productReference = FAE482F013A2884800F0F1A8 /* artFileTool */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FAE482E713A2884700F0F1A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Alex Zielenski";
+			};
+			buildConfigurationList = FAE482EA13A2884700F0F1A8 /* Build configuration list for PBXProject "artFileTool" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FAE482E513A2884700F0F1A8;
+			productRefGroup = FAE482F113A2884800F0F1A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAE482EF13A2884800F0F1A8 /* artFileTool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAE482EC13A2884800F0F1A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAE482F813A2884800F0F1A8 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FAE482FD13A2884800F0F1A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FAE482FE13A2884800F0F1A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FAE4830013A2884800F0F1A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "artFileTool/artFileTool-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FAE4830113A2884800F0F1A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "artFileTool/artFileTool-Prefix.pch";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FAE482EA13A2884700F0F1A8 /* Build configuration list for PBXProject "artFileTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAE482FD13A2884800F0F1A8 /* Debug */,
+				FAE482FE13A2884800F0F1A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAE482FF13A2884800F0F1A8 /* Build configuration list for PBXNativeTarget "artFileTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAE4830013A2884800F0F1A8 /* Debug */,
+				FAE4830113A2884800F0F1A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FAE482E713A2884700F0F1A8 /* Project object */;
+}
