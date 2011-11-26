@@ -1,6 +1,6 @@
 artFileTool for Lion & Snow Leopard
 ===================================
-artFileTool is a command line tool for encoding and decoding the ArtFile.bin found in `/System/Library/PrivateFrameworks/CoreUI.framework/Versions/A/ArtFile.bin`. It its current state it can flawlessly decode the artFile.bin into a directory. Right now encoding is a bit iffy.
+artFileTool is a command line tool for encoding and decoding the ArtFile.bin found in `/System/Library/PrivateFrameworks/CoreUI.framework/Versions/A/ArtFile.bin`. It its current state it can flawlessly decode the artFile.bin into a directory. Right now encoding is a bit iffy. You can find the SArtFile.bin counterpart [here!](https://github.com/alexzielenski/SArtFileTool)
 
 Issues
 ===================================
