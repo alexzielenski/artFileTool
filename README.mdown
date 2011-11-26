@@ -1,0 +1,13 @@
+artFileTool for Lion & Snow Leopard
+===================================
+artFileTool is a command line tool for encoding and decoding the ArtFile.bin found in `/System/Library/PrivateFrameworks/CoreUI.framework/Versions/A/ArtFile.bin`. It its current state it can flawlessly decode the artFile.bin into a directory. Right now encoding is a bit iffy.
+
+Issues
+===================================
+I have had a lot of trouble finding the right recipe for getting raw image data for the ArtFile.bin. It seems to want Unpremultiplied, 8-bit component, major row-index, BGRA (ARGB for SL) image data. Unpremultiplied, alpha first is not supported natively by CoreGraphics so it takes some work to actually get the data. (and mine is certainly not perfect).
+
+All of you crazy people out there willing to take a shot at fixing this are more than welcomed: you are thanked. **You can find a specification for the ArtFile.bin [here](http://macthemes.net/wiki/10.5_ArtFile.bin "here").**
+
+License
+===================================
+ArtFileTool is license under the [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/ "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License") because I would prefer people not make commercial applications based off of this code. The theming community is supposed to be open and as the name implies: A community.

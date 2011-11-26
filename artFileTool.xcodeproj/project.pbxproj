@@ -7,9 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA93918313A28E890002047D /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918213A28E890002047D /* Defines.m */; };
+		FA93918613A2908F0002047D /* encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918513A2908F0002047D /* encoder.m */; };
+		FAB92EB61481629600E5E8F8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB92EB51481629600E5E8F8 /* QuartzCore.framework */; };
 		FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE482F413A2884800F0F1A8 /* Foundation.framework */; };
 		FAE482F813A2884800F0F1A8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE482F713A2884800F0F1A8 /* main.m */; };
 		FAE482FC13A2884800F0F1A8 /* artFileTool.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FAE482FB13A2884800F0F1A8 /* artFileTool.1 */; };
+		FAE4830D13A288BE00F0F1A8 /* decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE4830C13A288BE00F0F1A8 /* decoder.m */; };
+		FAE4830F13A288D600F0F1A8 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE4830E13A288D600F0F1A8 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,11 +31,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA93918213A28E890002047D /* Defines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defines.m; sourceTree = "<group>"; };
+		FA93918513A2908F0002047D /* encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = encoder.m; sourceTree = "<group>"; };
+		FA93918713A290960002047D /* encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoder.h; sourceTree = "<group>"; };
+		FAB92EB51481629600E5E8F8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FAE482F013A2884800F0F1A8 /* artFileTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = artFileTool; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAE482F413A2884800F0F1A8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FAE482F713A2884800F0F1A8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */ = {isa = PBXFileReference; path = "artFileTool-Prefix.pch"; sourceTree = "<group>"; };
+		FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "artFileTool-Prefix.pch"; sourceTree = "<group>"; };
 		FAE482FB13A2884800F0F1A8 /* artFileTool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = artFileTool.1; sourceTree = "<group>"; };
+		FAE4830813A2886900F0F1A8 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
+		FAE4830B13A288BE00F0F1A8 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
+		FAE4830C13A288BE00F0F1A8 /* decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = decoder.m; sourceTree = "<group>"; };
+		FAE4830E13A288D600F0F1A8 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +51,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAB92EB61481629600E5E8F8 /* QuartzCore.framework in Frameworks */,
+				FAE4830F13A288D600F0F1A8 /* Cocoa.framework in Frameworks */,
 				FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,6 +63,7 @@
 		FAE482E513A2884700F0F1A8 = {
 			isa = PBXGroup;
 			children = (
+				FAB92EB51481629600E5E8F8 /* QuartzCore.framework */,
 				FAE482F613A2884800F0F1A8 /* artFileTool */,
 				FAE482F313A2884800F0F1A8 /* Frameworks */,
 				FAE482F113A2884800F0F1A8 /* Products */,
@@ -65,6 +81,7 @@
 		FAE482F313A2884800F0F1A8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FAE4830E13A288D600F0F1A8 /* Cocoa.framework */,
 				FAE482F413A2884800F0F1A8 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -73,6 +90,12 @@
 		FAE482F613A2884800F0F1A8 /* artFileTool */ = {
 			isa = PBXGroup;
 			children = (
+				FAE4830813A2886900F0F1A8 /* Defines.h */,
+				FA93918213A28E890002047D /* Defines.m */,
+				FAE4830B13A288BE00F0F1A8 /* decoder.h */,
+				FAE4830C13A288BE00F0F1A8 /* decoder.m */,
+				FA93918713A290960002047D /* encoder.h */,
+				FA93918513A2908F0002047D /* encoder.m */,
 				FAE482F713A2884800F0F1A8 /* main.m */,
 				FAE482FB13A2884800F0F1A8 /* artFileTool.1 */,
 				FAE482F913A2884800F0F1A8 /* Supporting Files */,
@@ -114,6 +137,7 @@
 		FAE482E713A2884700F0F1A8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Alex Zielenski";
 			};
 			buildConfigurationList = FAE482EA13A2884700F0F1A8 /* Build configuration list for PBXProject "artFileTool" */;
@@ -139,6 +163,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAE482F813A2884800F0F1A8 /* main.m in Sources */,
+				FAE4830D13A288BE00F0F1A8 /* decoder.m in Sources */,
+				FA93918313A28E890002047D /* Defines.m in Sources */,
+				FA93918613A2908F0002047D /* encoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,7 +177,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -161,14 +187,15 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -177,18 +204,19 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				SDKROOT = macosx;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};
@@ -197,7 +225,9 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "artFileTool/artFileTool-Prefix.pch";
+				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -206,7 +236,9 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "artFileTool/artFileTool-Prefix.pch";
+				GCC_VERSION = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};
@@ -229,6 +261,7 @@
 				FAE4830113A2884800F0F1A8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
