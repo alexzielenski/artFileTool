@@ -11,3 +11,5 @@ All of you crazy people out there willing to take a shot at fixing this are more
 License
 ===================================
 ArtFileTool is license under the [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/ "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License") because I would prefer people not make commercial applications based off of this code. The theming community is supposed to be open and as the name implies: A community.
+
+Credit should be made up to [Alex Zielenski](http://alexzielenski.com) and [Indragie Karunaratne](http://indragie.com)
