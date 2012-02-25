@@ -9,7 +9,7 @@
 #include "decoder.h"
 #include "encoder.h"
 
-#define __DEBUG__
+//#define __DEBUG__
 //#define __DECODE__
 
 static const char *help = "Usage:\n\tDecode: -d [-l] [-c] filePath exportDirectory\n\tEncode: -e [-l] [-c] [-v] imageDirectory originalFilePath newFilePath\n\t-l: Use this argument if you are using a Snow Leopard file.\n\t-c: Use this argument to piece the images together/apart.\n";
@@ -18,18 +18,18 @@ int main (int argc, const char * argv[])
 	
 #ifdef __DEBUG__
 #ifdef __DECODE__
-	argc = 5;
+	argc = 4;
 	argv[1] = "-d";
-	argv[2] = "-c";
-	argv[3] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-hfscovimcodavkfrdkithbavgypc/Build/Products/Debug/ArtFile.bin";
-	argv[4] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-hfscovimcodavkfrdkithbavgypc/Build/Products/Debug/artFiles";
+//	argv[2] = "-c";
+	argv[2] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-eprgfwipffluefdiqucjsdlesmik/Build/Products/Debug/ArtFile.bin";
+	argv[3] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-eprgfwipffluefdiqucjsdlesmik/Build/Products/Debug/artFiles3";
 #else
 	argc = 6;
 	argv[1] = "-e";
 	argv[2] = "-c";
-	argv[3] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-hfscovimcodavkfrdkithbavgypc/Build/Products/Debug/artFiles";
-	argv[4] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-hfscovimcodavkfrdkithbavgypc/Build/Products/Debug/ArtFile.bin";
-	argv[5] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-hfscovimcodavkfrdkithbavgypc/Build/Products/Debug/ArtFile.new.bin";
+	argv[3] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-eprgfwipffluefdiqucjsdlesmik/Build/Products/Debug/artFiles";
+	argv[4] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-eprgfwipffluefdiqucjsdlesmik/Build/Products/Debug/ArtFile.bin";
+	argv[5] = "/Users/Alex/Library/Developer/Xcode/DerivedData/artFileTool-eprgfwipffluefdiqucjsdlesmik/Build/Products/Debug/ArtFile.new.bin";
 #endif
 #endif
 	
