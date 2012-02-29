@@ -6,12 +6,17 @@
 //  Copyright 2011 Alex Zielenski. All rights reserved.
 //
 
+#import "encoder.h"
 #include "Defines.h"
+
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
 
+
 unsigned char* dataFromRep(NSBitmapImageRep *bitmapImageRep, BOOL unpremultiply, BOOL abgr);
+
 static int globalCounter;
+
 unsigned char* bytesFromData(NSData *data, uint16_t *w, uint16_t *h) {
 	if (!data) {
 		NSLog(@"no data");
@@ -70,42 +75,38 @@ unsigned char* bytesFromData(NSData *data, uint16_t *w, uint16_t *h) {
     return bytes;
 }
 
-static unsigned char* bytesFromCGImage(CGImageRef image, uint16_t *w, uint16_t *h) {
+static NSData * CreateDataFromCGImageRect(CGImageRef image, NSUInteger originX, NSUInteger originY, NSUInteger width, NSUInteger height) {
 	if (!image)
 		return NULL;
 	
 	CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(image);
-		
-	NSInteger width = CGImageGetWidth(image);
-    NSInteger height = CGImageGetHeight(image);
-	NSInteger length = 0;
-	
-    if (w != NULL) { *w = (uint16_t)width; }
-    if (h != NULL) { *h = (uint16_t)height; }
+	size_t bytesPerRow = CGImageGetBytesPerRow(image);
     
-	
 	CGDataProviderRef provider = CGImageGetDataProvider(image);
 	CFDataRef data = CGDataProviderCopyData(provider);
-	length = CFDataGetLength(data);
-	UInt8* bytes = (UInt8*)CFDataGetBytePtr(data);
+	const UInt8 *tbytes = CFDataGetBytePtr(data);
+	
+	uint8_t *bytes = (uint8_t *)malloc(width * height * 4);
 
 	for (NSUInteger y = 0; y < width * height * 4; y += 4) { // bgra little endian + alpha first
 		uint8_t a, r, g, b;
 		
-		if ((alphaInfo & kCGImageAlphaFirst) == kCGImageAlphaFirst) {
-			a = bytes[y];
-			r = bytes[y+1];
-			g = bytes[y+2];
-			b = bytes[y+3];
+		NSUInteger offset = originX * 4 + originY * bytesPerRow + y / (width * 4) * (bytesPerRow - width * 4) + y;
+		
+		if (alphaInfo == kCGImageAlphaFirst) {
+			a = tbytes[offset];
+			r = tbytes[offset+1];
+			g = tbytes[offset+2];
+			b = tbytes[offset+3];
 		} else {
-			r = bytes[y];
-			g = bytes[y+1];
-			b = bytes[y+2];
-			a = bytes[y+3];
+			r = tbytes[offset];
+			g = tbytes[offset+1];
+			b = tbytes[offset+2];
+			a = tbytes[offset+3];
 		}
 		
 		 // this distorts the image even more without unpremultiplying the alpha for some reason.
-		if (((alphaInfo & kCGImageAlphaPremultipliedFirst)==kCGImageAlphaPremultipliedFirst) || ((alphaInfo & kCGImageAlphaPremultipliedLast)==kCGImageAlphaPremultipliedLast)) {
+		if ((alphaInfo == kCGImageAlphaPremultipliedFirst) || (alphaInfo == kCGImageAlphaPremultipliedLast)) {
 			float factor = 255.0f/(float)a;
 			r = r*factor;
 			g = g*factor;
@@ -130,10 +131,11 @@ static unsigned char* bytesFromCGImage(CGImageRef image, uint16_t *w, uint16_t *
 		} 
 	}
 	CFRelease(data);
-	return bytes;
+	
+	return [[NSData alloc] initWithBytesNoCopy:bytes length:(width * height * 4) freeWhenDone:YES];
 }
 
-static unsigned char* bytesFromBitmapImageRep(NSBitmapImageRep *imageRep, uint16_t *w, uint16_t *h) {
+/*static unsigned char* bytesFromBitmapImageRep(NSBitmapImageRep *imageRep, uint16_t *w, uint16_t *h) {
 	CFDataRef data = (CFDataRef)[imageRep representationUsingType:NSPNGFileType properties:nil];
 	CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
 	CGImageRef imageRef = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
@@ -142,7 +144,7 @@ static unsigned char* bytesFromBitmapImageRep(NSBitmapImageRep *imageRep, uint16
 	CGDataProviderRelease(provider);
 	CFRelease(data);
 	return bytes;
-}
+}*/
 
 static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 	NSMutableData *fileData = [[NSMutableData alloc] initWithCapacity:0];
@@ -238,14 +240,9 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 						continue;
 					}
 					
-					
-					CGRect r = CGRectMake(currentX, currentY, width, height);
-					CGImageRef newRef = CGImageCreateWithImageInRect(totalImage, r);
-					
-					uint16_t fw, fh;
-					unsigned char * bytes = bytesFromCGImage(newRef,
-															 &fw, &fh);
-					
+					NSData *subdata = CreateDataFromCGImageRect(totalImage, currentX, currentY, width, height);
+					[currentFileData appendData:subdata];
+					[subdata release];
 					
 					currentX+=width;
 					
@@ -255,8 +252,6 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 					ah.subimage_offsets[ci] = offset;
 					
 					offset+=4*width*height;
-					
-					[currentFileData appendBytes:bytes length:4*width*height];
 					
 					if (y==ah.art_columns-1)
 						currentY+=height;
