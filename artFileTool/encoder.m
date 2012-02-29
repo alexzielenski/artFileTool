@@ -6,85 +6,145 @@
 //  Copyright 2011 Alex Zielenski. All rights reserved.
 //
 
+#import "encoder.h"
 #include "Defines.h"
-#include "encoder.h"
 
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
-#import <Accelerate/Accelerate.h>
 
-static int globalCounter;
+
 unsigned char* dataFromRep(NSBitmapImageRep *bitmapImageRep, BOOL unpremultiply, BOOL abgr);
 
-static unsigned char* bytesFromCGImage(CGImageRef image, uint16_t *w, uint16_t *h) {
+static int globalCounter;
+
+unsigned char* bytesFromData(NSData *data, uint16_t *w, uint16_t *h) {
+	if (!data) {
+		NSLog(@"no data");
+		return NULL;
+	}
+    // Create a bitmap from the source image data
+	
+    NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData:data];
+    NSInteger width = [imageRep pixelsWide];
+    NSInteger height = [imageRep pixelsHigh];
+    if (w != NULL) { *w = (uint16_t)width; }
+    if (h != NULL) { *h = (uint16_t)height; }
+    
+    unsigned char *bytes = [imageRep bitmapData];
+    for (NSUInteger y = 0; y < width * height * 4; y += 4) { // bgra little endian + alpha first
+		uint8_t a, r, g, b;
+		
+		if (imageRep.bitmapFormat & NSAlphaFirstBitmapFormat) {
+			a = bytes[y];
+			r = bytes[y+1];
+			g = bytes[y+2];
+			b = bytes[y+3];
+		} else {
+			r = bytes[y+0];
+			g = bytes[y+1];
+			b = bytes[y+2];
+			a = bytes[y+3];
+		}
+		
+		// unpremultiply alpha if there is any
+		if (a > 0) {
+			if (!(imageRep.bitmapFormat & NSAlphaNonpremultipliedBitmapFormat)) {
+				float factor = 255.0f/a;
+				b *= factor;
+				g *= factor;
+				r *= factor;
+			}
+		} else {
+			b = 0;
+			g = 0;
+			r = 0;
+		}
+		
+		if (!legacy) {
+			bytes[y]=b;
+			bytes[y+1]=g;
+			bytes[y+2]=r;
+			bytes[y+3]=a;
+		} else {
+			bytes[y]=a;
+			bytes[y+1]=r;
+			bytes[y+2]=g;
+			bytes[y+3]=b;
+		}
+	}
+    return bytes;
+}
+
+static NSData * CreateDataFromCGImageRect(CGImageRef image, NSUInteger originX, NSUInteger originY, NSUInteger width, NSUInteger height) {
 	if (!image)
 		return NULL;
 	
 	CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(image);
-		
-	NSInteger width = CGImageGetWidth(image);
-    NSInteger height = CGImageGetHeight(image);
-	
-    if (w != NULL) { *w = (uint16_t)width; }
-    if (h != NULL) { *h = (uint16_t)height; }
-	
+	size_t bytesPerRow = CGImageGetBytesPerRow(image);
     
 	CGDataProviderRef provider = CGImageGetDataProvider(image);
 	CFDataRef data = CGDataProviderCopyData(provider);
+	const UInt8 *tbytes = CFDataGetBytePtr(data);
 	
-	UInt8* bytes = malloc(width * height * 4);
-	CFDataGetBytes(data, CFRangeMake(0, CFDataGetLength(data)), bytes);
+	uint8_t *bytes = (uint8_t *)malloc(width * height * 4);
+
+	for (NSUInteger y = 0; y < width * height * 4; y += 4) { // bgra little endian + alpha first
+		uint8_t a, r, g, b;
+		
+		NSUInteger offset = originX * 4 + originY * bytesPerRow + y / (width * 4) * (bytesPerRow - width * 4) + y;
+		
+		if (alphaInfo == kCGImageAlphaFirst) {
+			a = tbytes[offset];
+			r = tbytes[offset+1];
+			g = tbytes[offset+2];
+			b = tbytes[offset+3];
+		} else {
+			r = tbytes[offset];
+			g = tbytes[offset+1];
+			b = tbytes[offset+2];
+			a = tbytes[offset+3];
+		}
+		
+		 // this distorts the image even more without unpremultiplying the alpha for some reason.
+		if ((alphaInfo == kCGImageAlphaPremultipliedFirst) || (alphaInfo == kCGImageAlphaPremultipliedLast)) {
+			float factor = 255.0f/(float)a;
+			r = r*factor;
+			g = g*factor;
+			b = b*factor;
+		}
+		if (a==0) {
+			r = 0;
+			g = 0;
+			b = 0;
+		}
+		
+		if (!legacy) {
+			bytes[y]=b;
+			bytes[y+1]=g;
+			bytes[y+2]=r;
+			bytes[y+3]=a;
+		} else {
+			bytes[y]=a;
+			bytes[y+1]=r;
+			bytes[y+2]=g;
+			bytes[y+3]=b;
+		} 
+	}
 	CFRelease(data);
 	
-	vImage_Buffer src;
-	src.data = (void*)bytes;
-	src.rowBytes = 4 * width;
-	src.width = width;
-	src.height = height;
-	
-	BOOL alphaFirst    = (alphaInfo == kCGImageAlphaFirst || alphaInfo == kCGImageAlphaPremultipliedFirst);
-	BOOL premultiplied = (alphaInfo == kCGImageAlphaPremultipliedFirst || alphaInfo == kCGImageAlphaPremultipliedLast);
-	BOOL little        = (CGImageGetBitmapInfo(image) == kCGBitmapByteOrder32Little);
-	
-	uint8_t permuteMap[4];
-	if (alphaFirst) {
-		if (little) {
-			// BGRA to BGRA
-			permuteMap[0] = 0;
-			permuteMap[1] = 1;
-			permuteMap[2] = 2;
-			permuteMap[3] = 3;
-		} else {
-			// ARGB to BGRA
-			permuteMap[0] = 3;
-			permuteMap[1] = 2;
-			permuteMap[2] = 1;
-			permuteMap[3] = 0;
-		}
-	} else {
-		if (little) {
-			// ABGR to BGRA
-			permuteMap[0] = 1;
-			permuteMap[1] = 2;
-			permuteMap[2] = 3;
-			permuteMap[3] = 0;
-		} else {
-			// RGBA to BGRA
-			permuteMap[0] = 2;
-			permuteMap[1] = 1;
-			permuteMap[2] = 0;
-			permuteMap[3] = 3;
-		}
-	}
-	
-	vImagePermuteChannels_ARGB8888(&src, &src, permuteMap, 0);
-	
-	if (premultiplied) {
-		vImageUnpremultiplyData_BGRA8888(&src, &src, 0);
-	}
-	
-	return src.data;
+	return [[NSData alloc] initWithBytesNoCopy:bytes length:(width * height * 4) freeWhenDone:YES];
 }
+
+/*static unsigned char* bytesFromBitmapImageRep(NSBitmapImageRep *imageRep, uint16_t *w, uint16_t *h) {
+	CFDataRef data = (CFDataRef)[imageRep representationUsingType:NSPNGFileType properties:nil];
+	CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);
+	CGImageRef imageRef = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
+	unsigned char *bytes = bytesFromCGImage(imageRef, w, h);
+	CGImageRelease(imageRef);
+	CGDataProviderRelease(provider);
+	CFRelease(data);
+	return bytes;
+}*/
 
 static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 	NSMutableData *fileData = [[NSMutableData alloc] initWithCapacity:0];
@@ -105,7 +165,6 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 		// write the file descriptor
 		[headerData replaceBytesInRange:NSMakeRange(header.file_descriptors_offset + sizeof(struct file_descriptor)*idx, sizeof(struct file_descriptor))
 							  withBytes:&fd];
-		
 		// find the path where out images are
 		NSString *currentFolderPath = folderPath;
 		for (int x = 0; x<sizeof(fd.tags); x++) {
@@ -135,9 +194,7 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 				uint16_t width;
 				uint16_t height;
 				
-				CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)tempData);
-				CGImageRef image = CGImageCreateWithPNGDataProvider(provider, NULL, false, kCGRenderingIntentDefault);
-				unsigned char *bytes = bytesFromCGImage(image, &width, &height);
+				unsigned char *bytes = bytesFromData(tempData, &width, &height);
 				
 				// set the goods
 				ah.subimage_heights[x] = height;
@@ -156,6 +213,7 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 			if (!tempData)
 				continue;
 			
+			
 			// split into pieces
 			int currentX;
 			int currentY = 0;
@@ -169,6 +227,8 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 				currentX=0;
 				
 				for (int y = 0; y<ah.art_columns; y++) {
+					
+					
 					uint32_t ci = x*ah.art_columns + y;
 					uint16_t width = ah.subimage_widths[ci];
 					uint16_t height = ah.subimage_heights[ci];
@@ -180,14 +240,9 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 						continue;
 					}
 					
-					CGRect r = CGRectMake(currentX, currentY, width, height);
-					CGImageRef newRef = CGImageCreateWithImageInRect(totalImage, r);
-					
-					unsigned char * bytes = bytesFromCGImage(newRef,
-															 NULL, NULL);
-					
-					
-					
+					NSData *subdata = CreateDataFromCGImageRect(totalImage, currentX, currentY, width, height);
+					[currentFileData appendData:subdata];
+					[subdata release];
 					
 					currentX+=width;
 					
@@ -198,8 +253,6 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 					
 					offset+=4*width*height;
 					
-					[currentFileData appendBytes:bytes length:4*width*height];
-					
 					if (y==ah.art_columns-1)
 						currentY+=height;
 					
@@ -207,6 +260,7 @@ static BOOL encodeImages(NSString *folderPath, NSString *destinationPath) {
 
 			}
 			CGImageRelease(totalImage);
+			
 		}
 		
 		printf("Encoded File Index : %i\n", idx);
