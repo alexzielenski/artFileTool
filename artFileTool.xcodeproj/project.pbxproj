@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA1CCF3614F9587500A3889F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA1CCF3514F9587500A3889F /* Accelerate.framework */; };
 		FA93918313A28E890002047D /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918213A28E890002047D /* Defines.m */; };
 		FA93918613A2908F0002047D /* encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918513A2908F0002047D /* encoder.m */; };
 		FAB92EB61481629600E5E8F8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB92EB51481629600E5E8F8 /* QuartzCore.framework */; };
@@ -32,7 +31,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		FA1CCF3514F9587500A3889F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		FA93918213A28E890002047D /* Defines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defines.m; sourceTree = "<group>"; };
 		FA93918513A2908F0002047D /* encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = encoder.m; sourceTree = "<group>"; };
 		FA93918713A290960002047D /* encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoder.h; sourceTree = "<group>"; };
@@ -53,7 +51,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA1CCF3614F9587500A3889F /* Accelerate.framework in Frameworks */,
 				FAB92EB61481629600E5E8F8 /* QuartzCore.framework in Frameworks */,
 				FAE4830F13A288D600F0F1A8 /* Cocoa.framework in Frameworks */,
 				FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */,
@@ -66,6 +63,7 @@
 		FAE482E513A2884700F0F1A8 = {
 			isa = PBXGroup;
 			children = (
+				FAB92EB51481629600E5E8F8 /* QuartzCore.framework */,
 				FAE482F613A2884800F0F1A8 /* artFileTool */,
 				FAE482F313A2884800F0F1A8 /* Frameworks */,
 				FAE482F113A2884800F0F1A8 /* Products */,
@@ -83,8 +81,6 @@
 		FAE482F313A2884800F0F1A8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA1CCF3514F9587500A3889F /* Accelerate.framework */,
-				FAB92EB51481629600E5E8F8 /* QuartzCore.framework */,
 				FAE4830E13A288D600F0F1A8 /* Cocoa.framework */,
 				FAE482F413A2884800F0F1A8 /* Foundation.framework */,
 			);
