@@ -235,17 +235,21 @@
     NSMutableDictionary *buffer1Index = [NSMutableDictionary dictionary];
     NSMutableDictionary *buffer2Index = [NSMutableDictionary dictionary];
 
-    
-    for (AFFileDescriptor *descriptor in self.art) {
-        NSString *fileName = [self nameForDescriptor:descriptor];
-        
-        [descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO];
-
-        
-        [buffer1Index setObject:descriptor.artHeader.buffer1 forKey:fileName];
-        [buffer2Index setObject:descriptor.artHeader.buffer2 forKey:fileName];
+    static uint32_t filesWritten = 0;
+    for (AFFileDescriptor *descriptor in self.art) {        
+            NSString *fileName = [self nameForDescriptor:descriptor];
+            
+            [descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO];
+            
+            
+            [buffer1Index setObject:descriptor.artHeader.buffer1 forKey:fileName];
+            [buffer2Index setObject:descriptor.artHeader.buffer2 forKey:fileName];
+            
+            filesWritten++;
+            
+            NSLog(@"Decoded file index: %d", [_art indexOfObject:descriptor]);
     }
-    
+
     [receipt setObject:buffer1Index forKey:@"buffer1"];
     [receipt setObject:buffer2Index forKey:@"buffer2"];
     
