@@ -69,31 +69,51 @@
 
 - (NSRect)rectForRow:(NSUInteger)row column:(NSUInteger)column
 {
-    return NSZeroRect;
+    NSUInteger width  = [[self.columnWidths objectAtIndex:column] unsignedIntegerValue];
+    NSUInteger height = [[self.rowHeights objectAtIndex:row] unsignedIntegerValue];
+    NSUInteger x      = 0;
+    NSUInteger y      = 0;
+    
+    // This returns the rectangle of the image from the bottom left rather than the top left
+    for (int z = row + 1; z < self.rowHeights.count; z++) {
+        y += [[self.rowHeights objectAtIndex:z] unsignedIntegerValue];
+    }
+    
+    for (int z = column - 1; z >= 0; z--) {
+        x += [[self.columnWidths objectAtIndex:z] unsignedIntegerValue];
+    }
+    
+    return NSMakeRect(x, y, width, height);
 }
 
 - (BOOL)_readFromData:(NSData *)data offset:(NSUInteger)offset
-{
-    NSLog(@"%lu", offset);
-    
+{    
     data.currentOffset = offset;
     
-    self.rowAmount = data.nextShort;
-    self.columnAmount = data.nextShort;
+    _rowAmount    = data.nextShort;
+    _columnAmount = data.nextShort;
     
     // Jump over the metadata
-    self.buffer1 = [data subdataWithRange:NSMakeRange(data.currentOffset, 26)];
+    self.buffer1        = [data subdataWithRange:NSMakeRange(data.currentOffset, 26)];
     data.currentOffset += 26;
     
-    self.rowHeights = [NSArray arrayWithObjects:
-                       [NSNumber numberWithUnsignedShort:data.nextShort],
-                       [NSNumber numberWithUnsignedShort:data.nextShort],
-                       [NSNumber numberWithUnsignedShort:data.nextShort], nil];
+    NSMutableArray *rowHeights   = [NSMutableArray arrayWithCapacity:_rowAmount];
+    NSMutableArray *columnWidths = [NSMutableArray arrayWithCapacity:_columnAmount];
     
-    self.columnWidths = [NSArray arrayWithObjects:
-                         [NSNumber numberWithUnsignedShort:data.nextShort],
-                         [NSNumber numberWithUnsignedShort:data.nextShort],
-                         [NSNumber numberWithUnsignedShort:data.nextShort], nil];
+    // Do them at the same time
+    NSUInteger currentOffset = data.currentOffset;
+    for (int z = 0; z < 3; z++) {
+        uint16_t height = data.nextShort;
+        if (height != 0)
+            [rowHeights addObject:[NSNumber numberWithUnsignedShort:height]];
+        
+        uint16_t width = [data shortAtOffset:currentOffset + 6 + 2 * z];
+        if (width != 0)
+            [columnWidths addObject:[NSNumber numberWithUnsignedShort:width]];
+    }
+    
+    self.rowHeights   = rowHeights;
+    self.columnWidths = columnWidths;
     
     // 2 more bytes of unknown
     self.buffer2 = [data subdataWithRange:NSMakeRange(data.currentOffset, 2)];
