@@ -8,14 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		FA1CCF3614F9587500A3889F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA1CCF3514F9587500A3889F /* Accelerate.framework */; };
-		FA93918313A28E890002047D /* Defines.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918213A28E890002047D /* Defines.m */; };
-		FA93918613A2908F0002047D /* encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FA93918513A2908F0002047D /* encoder.m */; };
 		FAB92EB61481629600E5E8F8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB92EB51481629600E5E8F8 /* QuartzCore.framework */; };
 		FAE482F513A2884800F0F1A8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE482F413A2884800F0F1A8 /* Foundation.framework */; };
 		FAE482F813A2884800F0F1A8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE482F713A2884800F0F1A8 /* main.m */; };
 		FAE482FC13A2884800F0F1A8 /* artFileTool.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FAE482FB13A2884800F0F1A8 /* artFileTool.1 */; };
-		FAE4830D13A288BE00F0F1A8 /* decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE4830C13A288BE00F0F1A8 /* decoder.m */; };
 		FAE4830F13A288D600F0F1A8 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE4830E13A288D600F0F1A8 /* Cocoa.framework */; };
+		FAE7F5C5156968AD00567D7B /* ArtFile.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5C4156968AD00567D7B /* ArtFile.m */; };
+		FAE7F5CC156968CB00567D7B /* NSData+Byte.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5C9156968CB00567D7B /* NSData+Byte.m */; };
+		FAE7F5CD156968CB00567D7B /* NSImageRep+Data.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5CB156968CB00567D7B /* NSImageRep+Data.m */; };
+		FAE7F5D01569698A00567D7B /* AFHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5CF1569698A00567D7B /* AFHeader.m */; };
+		FAE7F5D71569736200567D7B /* AFFileDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5D61569736200567D7B /* AFFileDescriptor.m */; };
+		FAE7F5DA1569737200567D7B /* AFArtHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE7F5D91569737200567D7B /* AFArtHeader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,19 +36,25 @@
 
 /* Begin PBXFileReference section */
 		FA1CCF3514F9587500A3889F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
-		FA93918213A28E890002047D /* Defines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defines.m; sourceTree = "<group>"; };
-		FA93918513A2908F0002047D /* encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = encoder.m; sourceTree = "<group>"; };
-		FA93918713A290960002047D /* encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encoder.h; sourceTree = "<group>"; };
 		FAB92EB51481629600E5E8F8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FAE482F013A2884800F0F1A8 /* artFileTool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = artFileTool; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAE482F413A2884800F0F1A8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FAE482F713A2884800F0F1A8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "artFileTool-Prefix.pch"; sourceTree = "<group>"; };
 		FAE482FB13A2884800F0F1A8 /* artFileTool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = artFileTool.1; sourceTree = "<group>"; };
-		FAE4830813A2886900F0F1A8 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
-		FAE4830B13A288BE00F0F1A8 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
-		FAE4830C13A288BE00F0F1A8 /* decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = decoder.m; sourceTree = "<group>"; };
 		FAE4830E13A288D600F0F1A8 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		FAE7F5C3156968AD00567D7B /* ArtFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArtFile.h; path = Classes/ArtFile.h; sourceTree = "<group>"; };
+		FAE7F5C4156968AD00567D7B /* ArtFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ArtFile.m; path = Classes/ArtFile.m; sourceTree = "<group>"; };
+		FAE7F5C8156968CB00567D7B /* NSData+Byte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Byte.h"; sourceTree = "<group>"; };
+		FAE7F5C9156968CB00567D7B /* NSData+Byte.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Byte.m"; sourceTree = "<group>"; };
+		FAE7F5CA156968CB00567D7B /* NSImageRep+Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSImageRep+Data.h"; sourceTree = "<group>"; };
+		FAE7F5CB156968CB00567D7B /* NSImageRep+Data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSImageRep+Data.m"; sourceTree = "<group>"; };
+		FAE7F5CE1569698A00567D7B /* AFHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFHeader.h; path = Classes/AFHeader.h; sourceTree = "<group>"; };
+		FAE7F5CF1569698A00567D7B /* AFHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFHeader.m; path = Classes/AFHeader.m; sourceTree = "<group>"; };
+		FAE7F5D51569736200567D7B /* AFFileDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFFileDescriptor.h; path = Classes/AFFileDescriptor.h; sourceTree = "<group>"; };
+		FAE7F5D61569736200567D7B /* AFFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFFileDescriptor.m; path = Classes/AFFileDescriptor.m; sourceTree = "<group>"; };
+		FAE7F5D81569737200567D7B /* AFArtHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFArtHeader.h; path = Classes/AFArtHeader.h; sourceTree = "<group>"; };
+		FAE7F5D91569737200567D7B /* AFArtHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFArtHeader.m; path = Classes/AFArtHeader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,12 +103,8 @@
 		FAE482F613A2884800F0F1A8 /* artFileTool */ = {
 			isa = PBXGroup;
 			children = (
-				FAE4830813A2886900F0F1A8 /* Defines.h */,
-				FA93918213A28E890002047D /* Defines.m */,
-				FAE4830B13A288BE00F0F1A8 /* decoder.h */,
-				FAE4830C13A288BE00F0F1A8 /* decoder.m */,
-				FA93918713A290960002047D /* encoder.h */,
-				FA93918513A2908F0002047D /* encoder.m */,
+				FAE7F5C7156968CB00567D7B /* categories */,
+				FAE7F5C6156968B000567D7B /* models */,
 				FAE482F713A2884800F0F1A8 /* main.m */,
 				FAE482FB13A2884800F0F1A8 /* artFileTool.1 */,
 				FAE482F913A2884800F0F1A8 /* Supporting Files */,
@@ -113,6 +118,33 @@
 				FAE482FA13A2884800F0F1A8 /* artFileTool-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FAE7F5C6156968B000567D7B /* models */ = {
+			isa = PBXGroup;
+			children = (
+				FAE7F5C3156968AD00567D7B /* ArtFile.h */,
+				FAE7F5C4156968AD00567D7B /* ArtFile.m */,
+				FAE7F5CE1569698A00567D7B /* AFHeader.h */,
+				FAE7F5CF1569698A00567D7B /* AFHeader.m */,
+				FAE7F5D51569736200567D7B /* AFFileDescriptor.h */,
+				FAE7F5D61569736200567D7B /* AFFileDescriptor.m */,
+				FAE7F5D81569737200567D7B /* AFArtHeader.h */,
+				FAE7F5D91569737200567D7B /* AFArtHeader.m */,
+			);
+			name = models;
+			sourceTree = "<group>";
+		};
+		FAE7F5C7156968CB00567D7B /* categories */ = {
+			isa = PBXGroup;
+			children = (
+				FAE7F5C8156968CB00567D7B /* NSData+Byte.h */,
+				FAE7F5C9156968CB00567D7B /* NSData+Byte.m */,
+				FAE7F5CA156968CB00567D7B /* NSImageRep+Data.h */,
+				FAE7F5CB156968CB00567D7B /* NSImageRep+Data.m */,
+			);
+			name = categories;
+			path = Categories;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,9 +199,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAE482F813A2884800F0F1A8 /* main.m in Sources */,
-				FAE4830D13A288BE00F0F1A8 /* decoder.m in Sources */,
-				FA93918313A28E890002047D /* Defines.m in Sources */,
-				FA93918613A2908F0002047D /* encoder.m in Sources */,
+				FAE7F5C5156968AD00567D7B /* ArtFile.m in Sources */,
+				FAE7F5CC156968CB00567D7B /* NSData+Byte.m in Sources */,
+				FAE7F5CD156968CB00567D7B /* NSImageRep+Data.m in Sources */,
+				FAE7F5D01569698A00567D7B /* AFHeader.m in Sources */,
+				FAE7F5D71569736200567D7B /* AFFileDescriptor.m in Sources */,
+				FAE7F5DA1569737200567D7B /* AFArtHeader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +215,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -199,7 +234,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -207,7 +242,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -220,7 +255,7 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};

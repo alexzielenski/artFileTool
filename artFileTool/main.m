@@ -6,84 +6,25 @@
 //  Copyright 2011 Alex Zielenski. All rights reserved.
 //
 
-#include "decoder.h"
-#include "encoder.h"
+#import <Foundation/Foundation.h>
+#import "ArtFile.h"
+#include <mach/mach_time.h>
 
-static const char *help = "Usage:\n\tDecode: -d [-l] [-c] filePath exportDirectory\n\tEncode: -e [-l] [-c] [-v] imageDirectory originalFilePath newFilePath\n\t-l: Use this argument if you are using a Snow Leopard file.\n\t-c: Use this argument to piece the images together/apart.\n";
+//static const char *help = "Usage:\n\tDecode: -d [-l] [-c] filePath exportDirectory\n\tEncode: -e [-l] [-c] [-v] imageDirectory originalFilePath newFilePath\n\t-l: Use this argument if you are using a Snow Leopard file.\n\t-c: Use this argument to piece the images together/apart.\n";
 int main (int argc, const char * argv[])
 {
 
-	if (argc < 3) {
-        printf(help, NULL);
-        return 1; // failure
-    }
-	
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	
-	BOOL decode = NO;
-	BOOL encode = NO;
-	
-	int startIdx = 0;
-	for (int x = 1; x < argc; x++) {
-		if ((!strcmp(argv[x], "-l"))) {
-			legacy = YES;
-			continue;
-		} else if  ((!strcmp(argv[x], "-d"))) {
-			decode = YES;
-			encode = NO;
-			continue;
-		} else if  ((!strcmp(argv[x], "-e"))) {
-			encode = YES;
-			decode = NO;
-			continue;
-		} else if  ((!strcmp(argv[x], "-c"))) {
-			connect = YES;
-			continue;
-		} else if ((!strcmp(argv[x], "-v"))) {
-			verbose=YES;
-			continue;
-		} else {
-			startIdx = x;
-			break;
-		}
-	}
-	
-
-	if (legacy)
-		printf("Using legacy mode…\n");
-	if (connect)
-		printf("Connecting Images\n");
-	if (decode)
-		printf("Decoding Files\n");
-	if (encode)
-		printf("Encoding Files\n");
-	if (verbose)
-		printf("Verbose mode\n");
-	
-    if (decode) {
-		NSString *exportDir;
-		NSString *file;
-		
-		file = [NSString stringWithUTF8String:argv[startIdx]];
-		exportDir = [NSString stringWithUTF8String:argv[startIdx+1]];
-        NSLog(@"%@, %@", file, exportDir);
-		return !(artfile_decode(file, exportDir));
-    } else if (encode) {
-		NSString *dir;
-		NSString *file;
-		NSString *dest;
-						
-		dir = [NSString stringWithUTF8String:argv[startIdx]];
-		file = [NSString stringWithUTF8String:argv[startIdx+1]];
-		dest = [NSString stringWithUTF8String:argv[startIdx+2]];
-		
-		return !(artfile_encode(dir, file, dest));
-    } else { // invalid first argument
-        printf(help, NULL);
-        [pool drain];
-        return 1;
-    }
-	
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    uint64_t start = mach_absolute_time();
+    ArtFile *file = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/ArtFile_10x8.bin"]];
+    [file decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"] 
+                   error:nil];
+    uint64_t end = mach_absolute_time(); 
+    uint64_t elapsed = end - start; mach_timebase_info_data_t info; 
+    mach_timebase_info(&info); 
+    uint64_t nanoSeconds = elapsed * info.numer / info.denom; 
+    printf ("elapsed time was %lld nanoseconds\n", nanoSeconds);
+    
     [pool drain];
     return 0;
 }
