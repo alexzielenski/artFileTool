@@ -108,15 +108,19 @@
     return self;
 }
 
-+ (ArtFile *)artFileWithFileAtURL:(NSURL *)url
++ (ArtFile *)artFileWithFileAtURL:(NSURL *)url majorOS:(NSUInteger)major minorOS:(NSUInteger)minor bugFixOS:(NSUInteger)bugFix;
 {
-    return [[[self alloc] initWithFileAtURL:url] autorelease];
+    return [[[self alloc] initWithFileAtURL:url majorOS:major minorOS:minor bugFixOS:bugFix] autorelease];
 }
 
-- (id)initWithFileAtURL:(NSURL *)url
+- (id)initWithFileAtURL:(NSURL *)url majorOS:(NSUInteger)major minorOS:(NSUInteger)minor bugFixOS:(NSUInteger)bugFix;
 {
     if ((self = [self init])) {
         NSData *data = [NSData dataWithContentsOfURL:url];
+        
+        _majorOSVersion  = major;
+        _minorOSVersion  = minor;
+        _bugFixOSVersion = bugFix;
         
         if (![self _readFileData:data]) {
             [self release];

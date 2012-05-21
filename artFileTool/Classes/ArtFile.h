@@ -41,8 +41,8 @@
 + (ArtFile *)artFileWithFolderAtURL:(NSURL *)url;
 - (id)initWithFolderAtURL:(NSURL *)url;
 
-+ (ArtFile *)artFileWithFileAtURL:(NSURL *)url;
-- (id)initWithFileAtURL:(NSURL *)url;
++ (ArtFile *)artFileWithFileAtURL:(NSURL *)url majorOS:(NSUInteger)major minorOS:(NSUInteger)minor bugFixOS:(NSUInteger)bugFix;
+- (id)initWithFileAtURL:(NSURL *)url majorOS:(NSUInteger)major minorOS:(NSUInteger)minor bugFixOS:(NSUInteger)bugFix;;
 
 + (NSURL *)artFileURL;
 + (NSURL *)artFile200URL;

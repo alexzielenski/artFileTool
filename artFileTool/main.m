@@ -28,37 +28,115 @@
 #import "ArtFile.h"
 #include <mach/mach_time.h>
 
-//static const char *help = "Usage:\n\tDecode: -d [-l] [-c] filePath exportDirectory\n\tEncode: -e [-l] [-c] [-v] imageDirectory originalFilePath newFilePath\n\t-l: Use this argument if you are using a Snow Leopard file.\n\t-c: Use this argument to piece the images together/apart.\n";
+static const char *help = "Usage:\n\tDecode: [-os 10.8|10.8.2|etc] -d filePath exportDirectory\n\tEncode: -e imageDirectory newFilePath\n";
 int main (int argc, const char * argv[])
 {
 
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    uint64_t start = mach_absolute_time();
     
-    ArtFile *file = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/ArtFile_10x8.bin"]];
-    [file decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"] error:nil];
-	
-    ArtFile *encode = [ArtFile artFileWithFolderAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"]];
-	[encode.data writeToFile:@"/Users/Alex/Desktop/ArtFile.new_10x8.bin" atomically:NO];
+    if (argc <= 2) {
+        printf(help, NULL);
+        return 1;
+    }
+    
+    BOOL encode;
+    BOOL pdf;
+    
+    int majorOS  = -1;
+    int minorOS  = 0;
+    int bugFixOS = 0;
+    
+	int startIdx = 0;
+    
+	for (int x = 1; x < argc; x++) {
+		if ((!strcmp(argv[x], "-os"))) {
+            NSString *os = [NSString stringWithUTF8String:argv[x + 1]];
+            NSArray *delimited = [os componentsSeparatedByString:@"."];
+            
+            for (int idx = 0; idx < delimited.count; idx++) {
+                NSNumber *num = [delimited objectAtIndex:idx];
+                int vers = num.intValue;
+                
+                if (idx == 0)
+                    majorOS = vers;
+                else if (idx == 1)
+                    minorOS = vers;
+                else if (idx == 2)
+                    bugFixOS = vers;
+                
+            }
+            
+			continue;
+		} else if  ((!strcmp(argv[x], "-d"))) {
+			encode = NO;
+			continue;
+		} else if  ((!strcmp(argv[x], "-e"))) {
+			encode = YES;
+			continue;
+        } else if ((!strcmp(argv[x], "-h")) || (!strcmp(argv[x], "-help")) || (!strcmp(argv[x], "?"))) {
+            printf(help, NULL);
+            return 1;
+            break;
+        } else if ((!strcmp(argv[x], "-pdf"))) { // hidden option
+            pdf = YES;   
+            continue;
+		} else {
+			startIdx = x - 1;
+			continue;
+		}
+	}
+    
+    NSString *path1 = nil, *path2 = nil;
+    
+    if (argc -1 <= startIdx) {
+        
+        if (!encode) {
+            path1 = [[ArtFile artFileURL] path];
+            startIdx--;
+            
+        } else {
+            NSLog(@"Missing arguments");
+            printf(help, NULL);
+            return 1;
+        }
+    }
+    
+    if (!path1)
+        path1 = [NSString stringWithUTF8String:argv[startIdx]];
+    
+    path2 = [NSString stringWithUTF8String:argv[startIdx + 1]];
+    
+    path1 = [path1 stringByExpandingTildeInPath];
+    path2 = [path2 stringByExpandingTildeInPath];
+    
+    uint64_t start = mach_absolute_time();
 
-	ArtFile *decode = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/ArtFile.new_10x8.bin"]];
-    [decode decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles2_10x8"] error:nil];
+    if (encode) {
+        ArtFile *file = [ArtFile artFileWithFolderAtURL:[NSURL fileURLWithPath:path1]];
+        [file.data writeToFile:path2 atomically:NO];
+    } else {
+        ArtFile *file = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:path1] 
+                                              majorOS:majorOS 
+                                              minorOS:minorOS 
+                                             bugFixOS:bugFixOS];
+        
+        NSError *err = nil;
+        [file decodeToFolder:[NSURL fileURLWithPath:path2] error:&err];
+        
+        if (err)
+            NSLog(@"%@", err.localizedFailureReason);
+        
+    }
 	
+#ifdef DEBUG
     uint64_t end = mach_absolute_time();
     uint64_t elapsed = end - start;
     mach_timebase_info_data_t info;
     mach_timebase_info(&info);
     uint64_t nanoSeconds = elapsed * info.numer / info.denom;
-//    printf ("elapsed time was %lld nanoseconds\n", nanoSeconds);
-    
 
-//    [encode decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles3_10x8"] error:nil];
-    
-    end = mach_absolute_time(); 
-    elapsed = end - start;
-    mach_timebase_info(&info); 
-    nanoSeconds = elapsed * info.numer / info.denom; 
     printf ("elapsed time was %lld nanoseconds\n", nanoSeconds);
+#endif
     
     [pool drain];
     return 0;
