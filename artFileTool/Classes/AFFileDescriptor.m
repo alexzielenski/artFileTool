@@ -57,6 +57,37 @@
     return self;
 }
 
++ (AFFileDescriptor *)fileDescriptorWithURL:(NSURL *)url artFile:(ArtFile *)artFile
+{
+    return [[[self alloc] initWithURL:url artFile:artFile] autorelease];
+}
+
+- (id)initWithURL:(NSURL *)url artFile:(ArtFile *)artFile
+{
+    if ((self = [self init])) {
+        self.artFile = artFile;
+        
+        NSString *fileName = [url.lastPathComponent stringByDeletingPathExtension];
+        NSArray *tagNames  = [fileName componentsSeparatedByString:@"."];
+        
+        NSMutableArray *tagIndices = [NSMutableArray arrayWithCapacity:8];
+                
+        for (NSString *tagName in tagNames) {
+            NSArray *allKeys = [artFile.tags allKeysForObject:tagName];
+            if (allKeys.count > 0)
+                [tagIndices addObject:[NSNumber numberWithUnsignedShort:(uint16_t)[[allKeys objectAtIndex:0] intValue]]];
+            
+        }
+        
+        self.tagIndices = tagIndices;
+        
+        self.artHeader = [AFArtHeader artHeaderWithImageData:[NSData dataWithContentsOfURL:url]];
+        self.artHeader.fileDescriptor = self;
+    }
+    
+    return self;
+}
+
 - (BOOL)_readFromData:(NSData *)data offset:(NSUInteger)offset
 {
     data.currentOffset = offset;
@@ -81,7 +112,7 @@
     // Get the file header
     self.artHeader = [AFArtHeader artHeaderWithData:data 
                                              offset:self.dataOffset + self.artFile.header.fileDataOffset
-                                         descriptor:self];;
+                                         descriptor:self];
     
     return YES;
 }
@@ -89,6 +120,25 @@
 + (NSUInteger)expectedLengthForArtFile:(ArtFile *)file
 {
     return 12;
+}
+
+- (NSData *)headerData
+{
+    NSMutableData *data = [NSMutableData dataWithCapacity:12];
+    [data appendInt:(uint32_t)self.dataOffset];
+    
+    for (NSNumber *tag in self.tagIndices)
+        [data appendByte:tag.unsignedCharValue];
+    
+    for (int x = (int)self.tagIndices.count; x < 8; x++)
+        [data appendByte:0];
+    
+    return data;
+}
+
+- (NSString *)fullname
+{
+	return [self.artFile nameForDescriptor:self];
 }
 
 @end

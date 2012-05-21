@@ -27,6 +27,7 @@
 #import "AFArtHeader.h"
 #import "NSImageRep+Data.h"
 #import "NSData+Byte.h"
+#import "AFFileDescriptor.h"
 
 @interface AFArtHeader ()
 - (BOOL)_readFromData:(NSData *)data offset:(NSUInteger)offset;
@@ -35,10 +36,11 @@
 @implementation AFArtHeader
 @synthesize rowAmount      = _rowAmount;
 @synthesize columnAmount   = _columnAmount;
-@synthesize buffer1        = _buffer1;
+@synthesize rectangles     = _rectangles;
+@synthesize phase          = _phase;
 @synthesize rowHeights     = _rowHeights;
 @synthesize columnWidths   = _columnWidths;
-@synthesize buffer2        = _buffer2;
+@synthesize buffer1        = _buffer1;
 @synthesize imageData      = _imageData;
 @synthesize fileDescriptor = _fileDescriptor;
 
@@ -58,8 +60,55 @@
         }
             
     }
+    return self;
+}
+
++ (AFArtHeader *)artHeaderWithImageData:(NSData *)data
+{
+    return [[[self alloc] initWithImageData:data] autorelease];
+}
+
+- (id)initWithImageData:(NSData *)data
+{
+    if ((self = [self init])) {
+        _imageData = [data retain];
+    }
     
     return self;
+}
+
+- (NSDictionary *)metadata
+{
+    NSMutableArray *rectangles = [NSMutableArray arrayWithCapacity:3];
+    
+    for (NSValue *rect in self.rectangles) {
+        [rectangles addObject:NSStringFromRect(rect.rectValue)];
+    }
+    
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            rectangles, @"rectangles", 
+            [NSNumber numberWithUnsignedShort:self.phase], @"phase", 
+            self.buffer1, @"buffer1", 
+            self.rowHeights, @"rowHeights",
+            self.columnWidths, @"columnWidths", nil];
+}
+
+- (void)readMetadata:(NSDictionary *)metadata
+{
+    NSArray *rects = [metadata objectForKey:@"rectangles"];
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:3];
+    
+    for (NSString *rect in rects) {
+        [values addObject:[NSValue valueWithRect:NSRectFromString(rect)]];
+    }
+    
+    self.rectangles   = values;
+    self.phase        = [[metadata objectForKey:@"phase"] unsignedShortValue];
+    self.buffer1      = [metadata objectForKey:@"buffer1"];
+    self.rowHeights   = [metadata objectForKey:@"rowHeights"];
+    self.columnWidths = [metadata objectForKey:@"columnWidths"];
+    self.rowAmount    = self.rowHeights.count;
+    self.columnAmount = self.columnWidths.count;
 }
 
 - (NSSize)totalImageSize
@@ -75,11 +124,11 @@
     NSUInteger y      = 0;
     
     // This returns the rectangle of the image from the bottom left rather than the top left
-    for (int z = row + 1; z < self.rowHeights.count; z++) {
+    for (int z = (int)row + 1; z < self.rowHeights.count; z++) {
         y += [[self.rowHeights objectAtIndex:z] unsignedIntegerValue];
     }
     
-    for (int z = column - 1; z >= 0; z--) {
+    for (int z = (int)column - 1; z >= 0; z--) {
         x += [[self.columnWidths objectAtIndex:z] unsignedIntegerValue];
     }
     
@@ -93,30 +142,41 @@
     _rowAmount    = data.nextShort;
     _columnAmount = data.nextShort;
     
-    // Jump over the metadata
-    self.buffer1        = [data subdataWithRange:NSMakeRange(data.currentOffset, 26)];
-    data.currentOffset += 26;
+    // Get the metadata
+    NSRect rect0 = NSMakeRect(data.nextShort, data.nextShort, data.nextShort, data.nextShort);
+    NSRect rect1 = NSMakeRect(data.nextShort, data.nextShort, data.nextShort, data.nextShort);
+    NSRect rect2 = NSMakeRect(data.nextShort, data.nextShort, data.nextShort, data.nextShort);
+    
+    self.rectangles = [NSArray arrayWithObjects:[NSValue valueWithRect:rect0], [NSValue valueWithRect:rect1], [NSValue valueWithRect:rect2], nil];
+    self.phase      = data.nextShort;
     
     NSMutableArray *rowHeights   = [NSMutableArray arrayWithCapacity:_rowAmount];
     NSMutableArray *columnWidths = [NSMutableArray arrayWithCapacity:_columnAmount];
     
     // Do them at the same time
-    NSUInteger currentOffset = data.currentOffset;
-    for (int z = 0; z < 3; z++) {
-        uint16_t height = data.nextShort;
-        if (height != 0)
-            [rowHeights addObject:[NSNumber numberWithUnsignedShort:height]];
+    uint16_t rows[3];
+    [data getBytes:&rows range:NSMakeRange(data.currentOffset, 6)];
+    
+    uint16_t cols[3];
+    [data getBytes:&cols range:NSMakeRange(data.currentOffset + 6, 6)];
+    
+    data.currentOffset += 12;
+    
+    for (int x = 0; x < 3; x++) {
+        uint16_t currentRow = rows[x];
+        uint16_t currentCol = cols[x];
         
-        uint16_t width = [data shortAtOffset:currentOffset + 6 + 2 * z];
-        if (width != 0)
-            [columnWidths addObject:[NSNumber numberWithUnsignedShort:width]];
+        if (currentRow != 0)
+            [rowHeights addObject:[NSNumber numberWithUnsignedShort:currentRow]];
+        if (currentCol != 0)
+            [columnWidths addObject:[NSNumber numberWithUnsignedShort:currentCol]];
     }
     
     self.rowHeights   = rowHeights;
     self.columnWidths = columnWidths;
     
     // 2 more bytes of unknown
-    self.buffer2 = [data subdataWithRange:NSMakeRange(data.currentOffset, 2)];
+    self.buffer1 = [data subdataWithRange:NSMakeRange(data.currentOffset, 2)];
     data.currentOffset += 2;
     
     NSSize totalSize = self.totalImageSize;
@@ -132,6 +192,65 @@
 + (NSUInteger)expectedLengthForArtFile:(ArtFile *)file
 {
     return 44;
+}
+
+- (NSBitmapImageRep *)imageRepresentation
+{
+    return [NSBitmapImageRep imageRepWithData:self.imageData];
+}
+
+- (NSData *)headerData
+{
+    NSData *imageData = self.imageRepresentation.artFileData;
+    NSMutableData *data = [NSMutableData dataWithCapacity:[self.class expectedLengthForArtFile:self.fileDescriptor.artFile] + imageData.length];
+    
+    // 4 bytes of rows and cols
+    [data appendShort:self.rowAmount];
+    [data appendShort:self.columnAmount];
+    
+    // 26 bytes of META
+    for (NSValue *value in self.rectangles) {
+        NSRect rect = value.rectValue;
+        
+        [data appendShort:rect.origin.x];
+        [data appendShort:rect.origin.y];
+        [data appendShort:rect.size.width];
+        [data appendShort:rect.size.height];
+        
+    }
+    
+    [data appendShort:self.phase];
+        
+    // Heights
+    for (int x = 0; x < 3; x++) {
+        NSNumber *currentValue = nil;
+        
+        if (x < self.rowHeights.count)
+            currentValue = [self.rowHeights objectAtIndex:x];
+        
+        uint16_t value = currentValue ? currentValue.unsignedShortValue : 0;
+        [data appendShort:value];
+    }
+    
+    // Widths
+    for (int x = 0; x < 3; x++) {
+        NSNumber *currentValue = nil;
+        
+        if (x < self.columnWidths.count)
+            currentValue = [self.columnWidths objectAtIndex:x];
+        
+        uint16_t value = currentValue ? currentValue.unsignedShortValue : 0;
+        [data appendShort:value];
+    }
+    
+    // buffer1
+    [data appendData:self.buffer1];
+    
+    // raw image data
+    [data appendData:imageData];
+    
+    
+    return data;
 }
 
 @end

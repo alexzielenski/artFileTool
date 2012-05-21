@@ -100,3 +100,30 @@ static char OFFSET;
 }
 
 @end
+
+@implementation NSMutableData (ByteAdditions)
+
+- (void)appendByte:(uint8_t)value
+{
+    [self appendBytes:&value length:sizeof(value)];
+}
+
+- (void)appendShort:(uint16_t)value
+{
+    uint16_t swap = CFSwapInt16HostToLittle(value);
+    [self appendBytes:&swap length:sizeof(swap)];
+}
+
+- (void)appendInt:(uint32_t)value
+{
+    uint32_t swap = CFSwapInt32HostToLittle(value);
+    [self appendBytes:&swap length:sizeof(swap)];
+}
+
+- (void)appendLong:(uint64_t)value;
+{
+    uint64_t swap = CFSwapInt64HostToLittle(value);
+    [self appendBytes:&swap length:sizeof(swap)];
+}
+
+@end

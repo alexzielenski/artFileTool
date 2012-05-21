@@ -41,4 +41,6 @@
 + (AFHeader *)headerWithData:(NSData *)data artFile:(ArtFile *)file;
 - (id)initWithData:(NSData *)data artFile:(ArtFile *)file;
 
+- (NSData *)headerData;
++ (NSUInteger)expectedLengthForArtFile:(ArtFile *)file;
 @end

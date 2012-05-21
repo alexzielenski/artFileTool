@@ -34,13 +34,30 @@ int main (int argc, const char * argv[])
 
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     uint64_t start = mach_absolute_time();
+    
     ArtFile *file = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/ArtFile_10x8.bin"]];
-    [file decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"] 
-                   error:nil];
-    uint64_t end = mach_absolute_time(); 
-    uint64_t elapsed = end - start; mach_timebase_info_data_t info; 
+    [file decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"] error:nil];
+	
+    ArtFile *encode = [ArtFile artFileWithFolderAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles_10x8"]];
+	[encode.data writeToFile:@"/Users/Alex/Desktop/ArtFile.new_10x8.bin" atomically:NO];
+
+	ArtFile *decode = [ArtFile artFileWithFileAtURL:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/ArtFile.new_10x8.bin"]];
+    [decode decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles2_10x8"] error:nil];
+	
+    uint64_t end = mach_absolute_time();
+    uint64_t elapsed = end - start;
+    mach_timebase_info_data_t info;
+    mach_timebase_info(&info);
+    uint64_t nanoSeconds = elapsed * info.numer / info.denom;
+//    printf ("elapsed time was %lld nanoseconds\n", nanoSeconds);
+    
+
+//    [encode decodeToFolder:[NSURL fileURLWithPath:@"/Users/Alex/Desktop/artFiles3_10x8"] error:nil];
+    
+    end = mach_absolute_time(); 
+    elapsed = end - start;
     mach_timebase_info(&info); 
-    uint64_t nanoSeconds = elapsed * info.numer / info.denom; 
+    nanoSeconds = elapsed * info.numer / info.denom; 
     printf ("elapsed time was %lld nanoseconds\n", nanoSeconds);
     
     [pool drain];

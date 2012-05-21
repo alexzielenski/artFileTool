@@ -69,4 +69,22 @@
     self.fileDataOffset        = data.nextInt;
 }
 
+- (NSData *)headerData
+{
+    NSMutableData *data = [NSMutableData dataWithCapacity:[self.class expectedLengthForArtFile:self.artFile]];
+    [data appendShort:self.fileAmount];
+    [data appendShort:self.maximumDepth];
+    [data appendInt:self.tagAmount];
+    [data appendInt:self.tagDescriptorsOffset];
+    [data appendInt:self.tagNamesOffset];
+    [data appendInt:self.fileDescriptorsOffset];
+    [data appendInt:self.fileDataOffset];
+    return data;
+}
+
++ (NSUInteger)expectedLengthForArtFile:(ArtFile *)file
+{
+    return 24;
+}
+
 @end

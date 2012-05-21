@@ -26,15 +26,17 @@
 #import <Foundation/Foundation.h>
 #import "AFHeader.h"
 
+@class AFFileDescriptor;
+
 @interface ArtFile : NSObject
-@property (nonatomic, retain) NSDictionary *tags;
-@property (nonatomic, retain) NSArray      *art;
+@property (retain) NSDictionary *tags;
+@property (retain) NSArray      *art;
 
-@property (nonatomic, retain) AFHeader *header;
+@property (retain) AFHeader *header;
 
-@property (nonatomic, assign) NSUInteger  majorOSVersion;
-@property (nonatomic, assign) NSUInteger  minorOSVersion;
-@property (nonatomic, assign) NSUInteger  bugFixOSVersion;
+@property (assign) NSUInteger  majorOSVersion;
+@property (assign) NSUInteger  minorOSVersion;
+@property (assign) NSUInteger  bugFixOSVersion;
 
 + (ArtFile *)artFileWithFolderAtURL:(NSURL *)url;
 - (id)initWithFolderAtURL:(NSURL *)url;
@@ -45,11 +47,13 @@
 + (NSURL *)artFileURL;
 + (NSURL *)artFile200URL;
 
+// Don't call often. Expensive.
 - (NSData *)data;
 - (NSArray *)imageRepresentations;
 
 - (void)decodeToFolder:(NSURL *)url error:(NSError **)error;
 
 - (NSString *)tagForIndex:(uint8_t)index;
+- (NSString *)nameForDescriptor:(AFFileDescriptor *)descriptor;
 
 @end

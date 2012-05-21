@@ -39,6 +39,12 @@
 + (AFFileDescriptor *)fileDescriptorWithData:(NSData *)data offset:(NSUInteger)offset artFile:(ArtFile *)artFile;
 - (id)initWithData:(NSData *)data offset:(NSUInteger)offset artFile:(ArtFile *)artFile;
 
++ (AFFileDescriptor *)fileDescriptorWithURL:(NSURL *)url artFile:(ArtFile *)artFile;
+- (id)initWithURL:(NSURL *)url artFile:(ArtFile *)artFile;
+
 + (NSUInteger)expectedLengthForArtFile:(ArtFile *)file;
+- (NSData *)headerData;
+
+- (NSString *)fullname;
 
 @end

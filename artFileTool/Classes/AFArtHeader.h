@@ -24,27 +24,38 @@
 //  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
 //  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 @class AFFileDescriptor, ArtFile;
 
 @interface AFArtHeader : NSObject
 @property (assign) uint16_t rowAmount;     // 1-3
 @property (assign) uint16_t columnAmount;  // 1-3
-@property (retain) NSData   *buffer1;      // 26 bytes of the unknown
+@property (retain) NSArray  *rectangles;   // rect0, rect1, rect2. There will always be three rectangles
+@property (assign) uint16_t phase;         // Looks like a type flag for the control
 @property (retain) NSArray  *rowHeights;   // Height of each row in their respective order
 @property (retain) NSArray  *columnWidths; // read above
-@property (retain) NSData   *buffer2;      // 2 bytes of the unknown
+@property (retain) NSData   *buffer1;      // 2 bytes of the unknown
 
-@property (retain) NSData   *imageData;
+@property (retain) NSData   *imageData;    // PNG data of the image in question
 @property (assign) AFFileDescriptor *fileDescriptor;
 
 + (AFArtHeader *)artHeaderWithData:(NSData *)data offset:(NSUInteger)offset descriptor:(AFFileDescriptor *)descriptor;
 - (id)initWithData:(NSData *)data offset:(NSUInteger)offset descriptor:(AFFileDescriptor *)descriptor;
 
++ (AFArtHeader *)artHeaderWithImageData:(NSData *)data;
+- (id)initWithImageData:(NSData *)data;
+
 + (NSUInteger)expectedLengthForArtFile:(ArtFile *)file;
+
+- (NSDictionary *)metadata;
+- (void)readMetadata:(NSDictionary *)metadata;
 
 - (NSSize)totalImageSize;
 - (NSRect)rectForRow:(NSUInteger)row column:(NSUInteger)column;
+
+- (NSBitmapImageRep *)imageRepresentation;
+
+- (NSData *)headerData;
 
 @end

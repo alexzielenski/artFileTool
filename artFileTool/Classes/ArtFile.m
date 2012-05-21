@@ -23,6 +23,7 @@
 //  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
 //  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
 //  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #import "ArtFile.h"
 #import "NSData+Byte.h"
 #import "AFFileDescriptor.h"
@@ -32,8 +33,9 @@
 - (BOOL)_compileTagsListFromData:(NSData *)data;
 - (BOOL)_readFileDescriptorsFromData:(NSData *)data;
 
-- (NSString *)nameForDescriptor:(AFFileDescriptor *)descriptor;
+- (void)_readReceipt:(NSDictionary *)receipt;
 
+- (NSString *)nameForDescriptor:(AFFileDescriptor *)descriptor;
 - (NSString *)_tagForNumber:(NSNumber *)number;
 @end
 
@@ -53,7 +55,54 @@
 - (id)initWithFolderAtURL:(NSURL *)url
 {
     if ((self = [self init])) {
+        NSFileManager *manager = [NSFileManager defaultManager];
         
+        BOOL exists, isDir;
+        exists = [manager fileExistsAtPath:url.path isDirectory:&isDir];
+        
+        if (!exists || !isDir) {
+            NSLog(@"Invalid directory path.");
+            [self release];
+            return nil;
+        }
+        
+        NSError *err = nil;
+        NSArray *contents = [manager contentsOfDirectoryAtPath:url.path error:&err];
+        
+        if (err) {
+            NSLog(@"Encountered error while reading directory contents: %@", err.localizedFailureReason);
+            [self release];
+            return nil;
+        }
+        
+        NSDictionary *receipt = [NSDictionary dictionaryWithContentsOfURL:[url URLByAppendingPathComponent:@"_receipt.plist"]];
+        if (!receipt) {
+            NSLog(@"Could not find receipt.");
+            [self release];
+            return nil;
+        }
+        
+        [self _readReceipt:receipt];
+        
+        NSDictionary *metadata = [receipt objectForKey:@"metadata"];
+        
+        self.header = [[[AFHeader alloc] init] autorelease];
+        self.header.artFile = self;
+        
+        NSMutableArray *descriptors = [NSMutableArray arrayWithCapacity:contents.count - 1];
+		
+        for (NSString *name in [receipt objectForKey:@"order"]) {
+            if ([name isEqualToString:@"_receipt.plist"])
+                continue;
+            
+            NSURL *fullURL = [url URLByAppendingPathComponent:name];
+            AFFileDescriptor *descriptor = [AFFileDescriptor fileDescriptorWithURL:fullURL artFile:self];
+            [descriptor.artHeader readMetadata:[metadata objectForKey:name]];
+			
+            [descriptors addObject:descriptor];
+        }
+        
+        self.art = descriptors;
     }
     
     return self;
@@ -95,6 +144,14 @@
     return self;
 }
 
+- (void)_readReceipt:(NSDictionary *)receipt
+{
+    self.tags = [receipt objectForKey:@"tags"];
+    self.majorOSVersion = [[receipt objectForKey:@"majorOS"] unsignedIntegerValue];
+    self.minorOSVersion = [[receipt objectForKey:@"minorOS"] unsignedIntegerValue];
+    self.bugFixOSVersion = [[receipt objectForKey:@"bugFixOS"] unsignedIntegerValue];
+}
+
 + (NSURL *)artFileURL
 {
     return [NSURL fileURLWithPath:@"/System/Library/PrivateFrameworks/CoreUI.framework/Versions/A/Resources/ArtFile.bin"];
@@ -107,12 +164,72 @@
 
 - (NSData *)data
 {
-    return nil;
+    NSUInteger fileDescriptorLength = [AFFileDescriptor expectedLengthForArtFile:self];
+    
+    NSMutableData *data            = [NSMutableData data];
+    NSMutableData *tagDescriptors  = [NSMutableData data];
+    NSMutableData *tagNames        = [NSMutableData data];
+    NSMutableData *fileDescriptors = [NSMutableData dataWithLength:fileDescriptorLength * self.art.count];
+    NSMutableData *fileData        = [NSMutableData data];
+        
+    for (NSString *key in [self.tags.allKeys sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"self.intValue" ascending:YES selector:@selector(compare:)]]]) {
+        NSString *tag = [self.tags objectForKey:key];
+        
+        [tagDescriptors appendInt:(uint32_t)tagNames.length];
+        [tagDescriptors appendInt:(uint32_t)key.intValue];
+        
+        // Tag name followed by a byte of 0
+        NSData *tagData = [tag dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
+        [tagNames appendData:tagData];
+        [tagNames appendByte:0];
+    }
+    
+	// Encode file data in the same order as the original artfile
+    NSSortDescriptor *sortArt = [NSSortDescriptor sortDescriptorWithKey:@"dataOffset" ascending:YES];
+    NSArray *sortedArt = [self.art sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortArt]];
+        
+    for (AFFileDescriptor *descriptor in sortedArt) {
+        descriptor.dataOffset = fileData.length;
+        
+        [fileData appendData:descriptor.artHeader.headerData];
+        
+        uint32_t artIdx = (uint32_t)[self.art indexOfObject:descriptor];
+        [fileDescriptors replaceBytesInRange:NSMakeRange(fileDescriptorLength * artIdx, fileDescriptorLength)
+                                   withBytes:[descriptor headerData].bytes];
+    }
+    
+    NSUInteger headerLength = [AFHeader expectedLengthForArtFile:self];
+    
+    // Make the amount of bytes a multiple of 4
+    NSUInteger totalCount  = headerLength + tagDescriptors.length + tagNames.length + fileDescriptors.length;
+    uint32_t paddingAmount = 4 - (totalCount % 4);
+	
+	if (paddingAmount != 4) {
+		for (char x = 0; x < paddingAmount; x++)
+			[fileDescriptors appendByte:0];
+	}
+    
+    // Set all of these values before appending the master header
+    self.header.fileAmount            = self.art.count;
+    self.header.maximumDepth          = 8;
+    self.header.tagAmount             = self.tags.count;
+    self.header.tagDescriptorsOffset  = headerLength;
+    self.header.tagNamesOffset        = self.header.tagDescriptorsOffset + tagDescriptors.length;
+    self.header.fileDescriptorsOffset = self.header.tagNamesOffset + tagNames.length;
+    self.header.fileDataOffset        = self.header.fileDescriptorsOffset + fileDescriptors.length;
+    
+    [data appendData:self.header.headerData];
+    [data appendData:tagDescriptors];
+    [data appendData:tagNames];
+    [data appendData:fileDescriptors];
+    [data appendData:fileData];
+    
+    return data;
 }
 
 - (NSArray *)imageRepresentations
 {
-    return nil;
+    return [self.art valueForKeyPath:@"artHeader.imageRepresentation"];
 }
 
 - (BOOL)_readFileData:(NSData *)data
@@ -227,45 +344,41 @@
                        attributes:nil 
                             error:error];
     
+    NSMutableDictionary *metadata = [NSMutableDictionary dictionaryWithCapacity:_header.fileAmount];
+
+    uint32_t filesWritten = 0;
+    for (AFFileDescriptor *descriptor in self.art) {
+        NSString *fileName = [self nameForDescriptor:descriptor];
+		
+        [descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO];
+        [metadata setObject:descriptor.artHeader.metadata forKey:fileName];
+        
+        // its faster to do this than call indexOfObject:
+        NSLog(@"Decoded file index: %d", filesWritten);
+		
+        filesWritten++;
+    }
+    
     NSMutableDictionary *receipt = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                     [NSNumber numberWithUnsignedInteger:self.majorOSVersion], @"majorOS",
                                     [NSNumber numberWithUnsignedInteger:self.minorOSVersion], @"minorOS",
-                                    [NSNumber numberWithUnsignedInteger:self.bugFixOSVersion], @"bugFixOS", nil];
+                                    [NSNumber numberWithUnsignedInteger:self.bugFixOSVersion], @"bugFixOS", 
+                                    metadata, @"metadata",
+                                    self.tags, @"tags",
+									[self.art valueForKeyPath:@"fullname"], @"order", nil];
     
-    NSMutableDictionary *buffer1Index = [NSMutableDictionary dictionary];
-    NSMutableDictionary *buffer2Index = [NSMutableDictionary dictionary];
-
-    static uint32_t filesWritten = 0;
-    for (AFFileDescriptor *descriptor in self.art) {        
-            NSString *fileName = [self nameForDescriptor:descriptor];
-            
-            [descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO];
-            
-            
-            [buffer1Index setObject:descriptor.artHeader.buffer1 forKey:fileName];
-            [buffer2Index setObject:descriptor.artHeader.buffer2 forKey:fileName];
-            
-            filesWritten++;
-            
-            NSLog(@"Decoded file index: %d", [_art indexOfObject:descriptor]);
-    }
-
-    [receipt setObject:buffer1Index forKey:@"buffer1"];
-    [receipt setObject:buffer2Index forKey:@"buffer2"];
     
     [receipt writeToURL:[url URLByAppendingPathComponent:@"_receipt.plist"] atomically:NO];
-
 }
 
 - (NSString *)nameForDescriptor:(AFFileDescriptor *)descriptor
 {
     NSString *tags = @"";
     for (NSNumber *tag in descriptor.tagIndices) {
-        tags = [tags stringByAppendingFormat:@".%@", [self _tagForNumber:tag]];
+        tags = [tags stringByAppendingFormat:@"%@%@", (tags.length == 0) ? @"" : @".", [self _tagForNumber:tag]];
     }
     
-    
-    return [[tags substringFromIndex:1] stringByAppendingPathExtension:@"png"];
+    return [tags stringByAppendingPathExtension:@"png"];
     
 }
 
