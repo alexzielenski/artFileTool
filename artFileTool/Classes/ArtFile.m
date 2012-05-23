@@ -192,14 +192,17 @@
     NSSortDescriptor *sortArt = [NSSortDescriptor sortDescriptorWithKey:@"dataOffset" ascending:YES];
     NSArray *sortedArt = [self.art sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortArt]];
         
+    int idx = 0;
     for (AFFileDescriptor *descriptor in sortedArt) {
         descriptor.dataOffset = fileData.length;
         
         [fileData appendData:descriptor.artHeader.headerData];
         
-        uint32_t artIdx = (uint32_t)[self.art indexOfObject:descriptor];
-        [fileDescriptors replaceBytesInRange:NSMakeRange(fileDescriptorLength * artIdx, fileDescriptorLength)
+        [fileDescriptors replaceBytesInRange:NSMakeRange(fileDescriptorLength * idx, fileDescriptorLength)
                                    withBytes:[descriptor headerData].bytes];
+        
+        NSLog(@"Encoded index %d", idx);
+        idx++;
     }
     
     NSUInteger headerLength = [AFHeader expectedLengthForArtFile:self];
