@@ -6,7 +6,164 @@ You can find the SArtFile.bin counterpart [here!](https://github.com/alexzielens
 
 Specification
 ===
-Coming Soon
+The file format for the ArtFile.bin is in five parts:
+
+* Master header
+* Tag descriptors
+* Tag names
+* File Descriptors
+* Art Headers + File Data
+
+***Note: It is vital that the order of the resources in the ArtFile.bin is identical to the one in the original. It seems that the system expects some sort of tag order***
+
+## Master Header
+
+The master header includes some vital information about the ArtFile.bin like file amounts and offsets. It is contained in the first 24 bytes of data in the file.
+
+<table>
+	<tr>
+		<th>Offset</th>
+		<th>Length</th>
+		<th>Purpose</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td>2</td>
+		<td>Amount of image resouces included in the ArtFile</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>2</td>
+		<td>Bit-depth of the image data. Should be 8.</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>4</td>
+		<td>Amount of tags in the artfile. Tags are strings used to describe each resource</td>
+	</tr>
+	<tr>
+		<td>8</td>
+		<td>4</td>
+		<td>Offset of the tag descriptors. Should be 24, right after the master header</td>
+	</tr>
+	<tr>
+		<td>12</td>
+		<td>4</td>
+		<td>Offset of the tag names. These are detailed below.</td>
+	</tr>
+	<tr>
+		<td>16</td>
+		<td>4</td>
+		<td>Offset for the file descriptors.</td>
+	</tr>
+	<tr>
+		<td>20</td>
+		<td>4</td>
+		<td>Offset for the file data.</td>
+	</tr>
+</table>
+
+## Tag descriptors
+
+There is a list of tag descriptors directly after the master offset. Each descriptor is 8 bytes.
+
+<table>
+	<tr>
+		<th>Offset</th>
+		<th>Length</th>
+		<th>Purpose</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td>4</td>
+		<td>Offset for the name of the tag relative to the offset specified in the master header</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>4</td>
+		<td>Tag index. A unique number assigned to the tag to be reference by the file descriptors. The first index should start at 1.</td>
+	</tr>
+</table>
+
+## Tag Names
+
+There is a list of tag names directly after the tag descriptors (the offset is in the master header) which includes all of the tags in alphabetical order separated by a byte of 0.
+
+## File Descriptors
+
+The file descriptor is a 12 byte group of data descripting a resource in the file. It contains information about the offset of the data as well as a list of the tags that apply to it.
+
+<table>
+	<tr>
+		<th>Offset</th>
+		<th>Length</th>
+		<th>Purpose</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td>4</td>
+		<td>Offset of the file data for this tag relative to the one specified in the master header.</td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td>8</td>
+		<td>8 bytes of 1 byte indices matching the tag for this resource, if not all 8 spots are used the rest is filled in with 0.</td>
+	</tr>
+</table>
+
+**At the end of the file descriptor a few bytes of 0 should be appended until the total size of the file at that point is a multiple of 4**
+
+## Art Headers
+
+A 44-byte group of data (104 bytes on Lion and below, but who cares?) describing the image resource following it. The header is located at the file data offset specified by its corresponding descriptor. The real image data follows this header in **Unpremultiplied major-row indexed, ARGB (BGRA because it is litle endian) data**. The image data is just a single image all connected nicely.
+
+CoreUI splits these images up into parts–they can be 1, 3, 6, or 9 (usually). The art header describes all of the parts used to split the image up into pieces for CoreUI.
+
+<table>
+	<tr>
+		<th>Offset</th>
+		<th>Length</th>
+		<th>Purpose</th>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td>2</td>
+		<td>The amount of 'rows' in the image resource.</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>2</td>
+		<td>The amount of 'columns' in the image resource.</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>24</td>
+		<td>3 groups 4 groups of 2-byte ints representing a rectangle with x, y, width, height, respectively. The purpose for these rectangles is not yet clear. Essentially this part of the data is just 3 rectangles</td>
+	</tr>
+	<tr>
+		<td>26</td>
+		<td>4</td>
+		<td>Unknown. Believed to be a type or state of the control used by the system.</td>
+	</tr>
+	<tr>
+		<td>30</td>
+		<td>6</td>
+		<td>2-byte height of row 0, 1, and 2, respectively</td>
+	</tr>
+	<tr>
+		<td>36</td>
+		<td>6</td>
+		<td>2-byte width of column 0, 1, and 2, respectively</td>
+	</tr>
+	<tr>
+		<td>42</td>
+		<td>2</td>
+		<td>Unknown. Referred two as buffer1 within the code.  For all of the files so far but 3, the hex of this value is DD 77 which is 30685 in decimal or if you split it up into 2 shorts, it is 221, 119</td>
+	</tr>
+</table>
+
+To get the length of the image data that follows the header, you must add up the widths of the rows and add the heights of the columns. The length of the image data is 4 * width * height.
+
 
 License
 ===================================
