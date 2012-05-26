@@ -63,7 +63,7 @@ int main (int argc, const char * argv[])
 				switch (option_index) {
 					case 0: {// --os
 						
-						NSString *os = [NSString stringWithUTF8String:argv[optind + 1]];
+						NSString *os = [NSString stringWithUTF8String:optarg];
 						NSArray *delimited = [os componentsSeparatedByString:@"."];
 						
 						for (int idx = 0; idx < delimited.count; idx++) {
