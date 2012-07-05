@@ -170,6 +170,7 @@ int main (int argc, const char * argv[])
     path1 = [path1 stringByExpandingTildeInPath];
     path2 = [path2 stringByExpandingTildeInPath];
         
+    printf("artFileTool and reverse engineering by Alex Zielenski (http://alexzielenski.com)\n");
 
     @try {
         uint64_t start = mach_absolute_time();
