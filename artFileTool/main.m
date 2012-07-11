@@ -41,11 +41,10 @@ int main (int argc, const char * argv[])
     }
     
     BOOL encode;
-    BOOL pdf;
     
-    int majorOS  = -1;
-    int minorOS  = 0;
-    int bugFixOS = 0;
+    NSUInteger majorOS  = NSNotFound;
+    NSUInteger minorOS  = 0;
+    NSUInteger bugFixOS = 0;
     
 	int c;
 	int option_index = 0;
@@ -68,7 +67,7 @@ int main (int argc, const char * argv[])
 						
 						for (int idx = 0; idx < delimited.count; idx++) {
 							NSNumber *num = [delimited objectAtIndex:idx];
-							int vers = num.intValue;
+							NSUInteger vers = num.unsignedIntegerValue;
 							
 							if (idx == 0)
 								majorOS = vers;

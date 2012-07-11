@@ -117,10 +117,12 @@
 {
     if ((self = [self init])) {
         NSData *data = [NSData dataWithContentsOfURL:url];
-        
-        _majorOSVersion  = major;
-        _minorOSVersion  = minor;
-        _bugFixOSVersion = bugFix;
+                
+        if (major != NSNotFound) {
+            _majorOSVersion  = major;
+            _minorOSVersion  = minor;
+            _bugFixOSVersion = bugFix;
+        }
         
         if (![self _readFileData:data]) {
             [self release];
@@ -351,13 +353,21 @@
                        attributes:nil 
                             error:error];
     
+    if (*error) {
+        NSLog(@"%@", *error);
+        return;
+    }
+    
     NSMutableDictionary *metadata = [NSMutableDictionary dictionaryWithCapacity:_header.fileAmount];
 
     uint32_t filesWritten = 0;
     for (AFFileDescriptor *descriptor in self.art) {
         NSString *fileName = [self nameForDescriptor:descriptor];
 		
-        [descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO];
+        if (![descriptor.artHeader.imageData writeToURL:[url URLByAppendingPathComponent:fileName] atomically:NO]) {
+            NSLog(@"Failed to write image. Skipping...");
+            continue;
+        }
         [metadata setObject:descriptor.artHeader.metadata forKey:fileName];
         
         // its faster to do this than call indexOfObject:
