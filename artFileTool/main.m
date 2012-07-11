@@ -24,7 +24,7 @@
 //  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
 //  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "ArtFile.h"
 #include <mach/mach_time.h>
 #include <getopt.h>
@@ -141,8 +141,20 @@ int main (int argc, const char * argv[])
 				
 				if (cp1 != NULL)
 					path1 = [NSString stringWithUTF8String:cp1];
-				else
-					path1 = [[ArtFile artFileURL] path];
+				else {
+                    BOOL retina = NO;
+                    
+                    for (NSScreen *screen in [NSScreen screens]) {
+                        if (screen.backingScaleFactor != 1.0) {
+                            retina = YES;
+                            break;
+                        }
+                    }
+                    
+					path1 = [(retina) ? ArtFile.artFile200URL : ArtFile.artFileURL path];
+                    
+                }
+                
 				if (cp2 != NULL)
 					path2 = [NSString stringWithUTF8String:cp2];
 				else {
