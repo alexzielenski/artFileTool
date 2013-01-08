@@ -138,7 +138,7 @@ CoreUI splits these images up into parts–they can be 1, 3, 6, or 9 (usually). 
 	<tr>
 		<td>2</td>
 		<td>24</td>
-		<td>3 groups 4 groups of 2-byte ints representing a rectangle with x, y, width, height, respectively. The purpose for these rectangles is not yet clear. Essentially this part of the data is just 3 rectangles</td>
+		<td>3 groups of 4 groups of 2-byte ints representing a rectangle with x, y, width, height, respectively. The purpose for these rectangles is not yet clear. Essentially this part of the data is just 3 rectangles</td>
 	</tr>
 	<tr>
 		<td>26</td>
