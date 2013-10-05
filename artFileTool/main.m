@@ -29,7 +29,7 @@
 #include <mach/mach_time.h>
 #include <getopt.h>
 
-static const char *help = "Usage:\n\tDecode: [-os 10.8|10.8.2|etc] -d filePath exportDirectory\n\tEncode: -e imageDirectory newFilePath\n";
+static const char *help = "Usage:\n\tDecode: [--os 10.8|10.8.2|etc] -d filePath exportDirectory\n\tEncode: -e imageDirectory newFilePath\n";
 int main (int argc, const char * argv[])
 {
 
