@@ -67,7 +67,7 @@ int main (int argc, const char * argv[])
 						
 						for (int idx = 0; idx < delimited.count; idx++) {
 							NSNumber *num = [delimited objectAtIndex:idx];
-							NSUInteger vers = num.unsignedIntegerValue;
+							NSInteger vers = num.integerValue;
 							
 							if (idx == 0)
 								majorOS = vers;
